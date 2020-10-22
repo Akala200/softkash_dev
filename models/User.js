@@ -5,24 +5,24 @@ const {Schema} = mongoose;
 const userSchema = new Schema({
     first_name: {
         type: String,
-        required: true
+        required: false
     },
     middle_name: {
         type: String,
-        required: true
+        required: false
     },
     last_name: {
         type: String,
-        required: true
+        required: false
     },      
     email: {
         type: String,
-        required: true,
+        required: false,
         unique: true
     },
     phone: {
         type: String,
-        required: false,
+        required: true,
         unique: true
     },
     password: {
