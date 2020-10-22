@@ -12,7 +12,7 @@ exports.getUser = async(req, res, next) => {
 }
 
 exports.postUser = async(req, res, next) => {
-    let {first_name, last_name,  middle_name, email, password} = req.body;
+    let {phone, password} = req.body;
     // process.exit();
     let hashedPassword = await makeHash(password);
     let token = generateUniqueId({
@@ -21,17 +21,15 @@ exports.postUser = async(req, res, next) => {
       });
    try{
      const user = await UserRepository.createUser({
-         email,
-         first_name,
-         middle_name,
-         last_name,
+         phone,
          password: hashedPassword
      })
      console.log('here', user)
-    Mail.sendVerifyEmail(email, token);
+   // Mail.sendVerifyEmail(email, token);
       return res.status(200).json({
         status: true,
         message: 'Registration is successfull',
+        verification_token: token,
         user,
       });
    }
