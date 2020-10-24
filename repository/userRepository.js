@@ -33,6 +33,17 @@ exports.storeToken = async(token, email) => {
     return user;
 }
 
+exports.verify = async(token) => {
+    let user = await User.findOne({ token});
+    if(!user) {
+        return false;
+    }
+    user.token = '';
+    user.save();
+
+    return user;
+}
+
 exports.updatePassword = async(password, id) => {
     let user = await User.findById(id);
     if(!user) {

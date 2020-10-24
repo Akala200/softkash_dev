@@ -23,7 +23,8 @@ exports.postUser = async(req, res, next) => {
      const user = await UserRepository.createUser({
          phone,
          password: hashedPassword,
-         coutry_code: coutry_code
+         coutry_code: coutry_code,
+         token: token
      })
      console.log('here', user)
    // Mail.sendVerifyEmail(email, token);
@@ -38,4 +39,23 @@ exports.postUser = async(req, res, next) => {
        console.log('an error occurred');
        return errorResponse(res, error.message, {email, password})
    }
+}
+
+exports.VerifyUser = async(req, res, next) => {
+  let {code} = req.body;
+  // process.exit();
+
+ try{
+   const user = await UserRepository.verify({
+       token: code,
+   })
+    return res.status(200).json({
+      status: true,
+      message: 'Phone number verified',
+    });
+ }
+ catch(error) {
+     console.log('an error occurred');
+     return errorResponse(res, error.message, {email, password})
+ }
 }
