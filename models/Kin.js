@@ -33,16 +33,12 @@ const userSchema = new Schema({
     phone: {
         type: Number,
         unique: true,
-        required: true
-    },
-    address: {
-        type: String,
-        required: false
-    },
-
-    coutry_code: {
-        type: String,
-        required: true
+        validate: {
+            validator: function(v) {
+                return /d{10}/.test(v);
+            },
+            message: '{VALUE} is not a valid 10 digit number!'
+        }
     },
    
     password: {
