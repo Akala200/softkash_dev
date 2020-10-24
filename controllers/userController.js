@@ -12,7 +12,7 @@ exports.getUser = async(req, res, next) => {
 }
 
 exports.postUser = async(req, res, next) => {
-    let {phone, password} = req.body;
+    let {phone, password, coutry_code} = req.body;
     // process.exit();
     let hashedPassword = await makeHash(password);
     let token = generateUniqueId({
@@ -22,7 +22,8 @@ exports.postUser = async(req, res, next) => {
    try{
      const user = await UserRepository.createUser({
          phone,
-         password: hashedPassword
+         password: hashedPassword,
+         coutry_code: coutry_code
      })
      console.log('here', user)
    // Mail.sendVerifyEmail(email, token);
