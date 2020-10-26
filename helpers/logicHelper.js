@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const generateUniqueId = require('generate-unique-id');
 
 exports.makeHash = async (password) => {
     try {
@@ -9,4 +10,17 @@ exports.makeHash = async (password) => {
         console.log(error);
     }
   
+}
+
+
+exports.makeToken = async () => {
+    try {
+        const token = await generateUniqueId({
+            length: 6,
+            useLetters: false
+          });
+        return token;
+    } catch (error) {
+        console.log(error);
+    }
 }

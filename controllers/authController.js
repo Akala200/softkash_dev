@@ -5,27 +5,29 @@ const {successResponse, errorResponse, notFoundResponse} = require('../helpers')
 const bcrypt = require('bcryptjs')
 const Mail = require('../mails');
 const {makeHash} = require('../helpers');
+const {makeToken} = require('../helpers');
+
 
 
 exports.postLogin = async (req, res) => {
-    let {email, password} = req.body
-    let user = await UserRepository.getUser({email: email});
+    let {phone, password, country_code} = req.body
+    let user = await UserRepository.getUser({phone: phone});
     if(!user) {
-        return errorResponse(res, 'Email or password is wrong',
-        {email, password})
+        return errorResponse(res, 'Phone number or password is wrong',
+        {phone, password})
     }
     let validPass = await comparePassword(password, user.password);
     
     if(!validPass) {
-        return errorResponse(res, 'Email or password is wrong',
-        {email, password})
+        return errorResponse(res, 'Phone number or password is wrong',
+        {phone, password})
     }
 
     // Generate token
     const token = jwt.sign({ _id: user._id, 
-        name: user.name, 
-        email: user.email }, 
-        process.env.JWT_TOKEN_SECRET, { expiresIn: '3h' });
+        country_code: user.country_code, 
+        phone: user.phone }, 
+        process.env.JWT_TOKEN_SECRET, { expiresIn: '1h' });
 
         // console.log(token);
         // Implement a login count later
@@ -37,27 +39,29 @@ exports.postLogin = async (req, res) => {
 
 
 exports.sendToken = async (req, res) => {
-    let {email} = req.body;
+    let {phone, country_code} = req.body;
 
-    if(!email) {
-        return errorResponse(res, 'Email is required', {});
+    if(!phone) {
+        return errorResponse(res, 'Phone number is required', {});
     }
 
-    let token = generateToken(email);
+    let code = parseInt(country_code);
+    let phoneNumber = code + phone;
 
-    let user = await UserRepository.storeToken(token, email);
+
+    let user = await UserRepository.storeToken(phone);
     if (!user) {
-        return errorResponse(res, 'Email does not exist', {email});
+        return errorResponse(res, 'Phone number does not exist', {phoneNumber});
     }
 
-    Mail.sendPasswordRest(user.token, user.email);
+  //  Mail.sendPasswordRest(user.token, user.email);
     return successResponse(res, 'A reset password link was sent to your mail', {user})
     
 }
 
 
 exports.resetPassword = async (req, res) => {
-    let token = req.params.token;
+    let token = req.query.token;
     let {password} = req.body;
 
     
@@ -66,17 +70,19 @@ exports.resetPassword = async (req, res) => {
     if(!password){ 
         return errorResponse(res, 'Password is required', {});
     }
-    let user = await UserRepository.getUser({token});
+    let user = await UserRepository.getUserByToken(token);
     
     if(!user) {
         return errorResponse(res, 'This token is invalid')
     }
+
     try {
-        const isTokenValid = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
       let hashedPassword = await makeHash(password);
       console.log('the hashed password ', hashedPassword);
     //   process.exit();
       let storedUser = await UserRepository.updatePassword(hashedPassword, user._id);
+      console.log(storedUser);
+
       return successResponse(res, 'Password Updated', {storedUser});
 
     } catch (err){

@@ -3,7 +3,7 @@ const AuthController = require('../controllers/authController');
 
 router.post("/login", AuthController.postLogin);
 router.post("/reset", AuthController.sendToken);
-router.post("/token/:token", AuthController.resetPassword);
+router.post("/change/password", AuthController.resetPassword);
 
 
 module.exports = router;

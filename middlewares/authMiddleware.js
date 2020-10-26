@@ -8,7 +8,6 @@ exports.auth = (req, res, next) => {
 
     try {
         const verified = jwt.verify(token, process.env.JWT_TOKEN_SECRET);
-        console.log('viewing the verified ', verified);
         req.user = verified;
         next();
     } catch (err){
