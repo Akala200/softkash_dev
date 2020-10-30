@@ -59,6 +59,20 @@ exports.sendToken = async (req, res) => {
     
 }
 
+exports.resend = async (req, res) => {
+    let { phone } = req.query;
+
+    let user = await UserRepository.getUserPhone(phone);
+    if (!user) {
+        return errorResponse(res, 'User does not exist');
+    }
+    let token = user.token;
+
+  //  Mail.sendPasswordRest(user.token, user.email);
+    return successResponse(res, 'Code has been resent', {token})
+    
+}
+
 
 exports.resetPassword = async (req, res) => {
     let token = req.query.token;

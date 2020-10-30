@@ -23,6 +23,13 @@ exports.postUser = async(req, res, next) => {
       useLetters: false
     });
 
+    const referral_id = generateUniqueId({
+      length: 12,
+      useLetters: true
+    });
+
+    let modifiedPhone = country_code + phone; 
+
       const salt = await bcrypt.genSalt(10);
    const hashedPassword = await bcrypt.hash(password, salt).catch((err) => {
      return err
@@ -33,14 +40,21 @@ exports.postUser = async(req, res, next) => {
          phone,
          password: hashedPassword,
          country_code: country_code,
-         token: token
+         token: token,
+         referral_id: referral_id
      });
+
+     const wallet = await UserRepository.createWallet({
+      user: user._id,
+      phone: modifiedPhone,
+  });
 
    // Mail.sendVerifyEmail(email, token);
       return res.status(200).json({
         status: true,
         message: 'Registration is successfull, kindly verify your account before the token expires',
         user,
+        wallet
       });
    }
    catch(error) {
@@ -78,25 +92,122 @@ exports.VerifyUser = async(req, res, next) => {
 exports.Details = async(req, res, next) => {
   let {email, address, first_name, middle_name, last_name, city, 
     country, closest_buss_stop, employed, self_employed, unemployed, employer,
-    bussiness_name 
+    bussiness_name, dob, devices_code, gender, marital_status, lock_status, referral_id, 
   } = req.body;
 
   let { id } = req.query;
-  console.log(id);
   let user = await UserRepository.getUserId(id);
 
   if(!user) {
     return errorResponse(res, 'User not found');
 }
 
+let refferalUser = await UserRepository.getUserReferral(referral_id);
+
+
+//getUserReferral
  try{
   const useDetail = await UserRepository.detail({
     email, address, first_name, middle_name, last_name, city, 
     country, closest_buss_stop, employed, self_employed, unemployed, employer,
-    bussiness_name, user: id
+    bussiness_name, user: id, dob, devices_code, gender, marital_status, lock_status, parent_id: refferalUser._id
   });
 
   return successResponse(res, 'User Details added', {useDetail})
+ }
+ 
+ catch(error) {
+     console.log('an error occurred');
+     return errorResponse(res, error.message)
+ }
+}
+
+
+exports.getLoan = async(req, res, next) => {
+  let { id } = req.query;
+  let user = await UserRepository.getUserAddDetails(id);
+
+  if(!user) {
+    return errorResponse(res, 'User not found');
+}
+
+//getUserReferral
+ try{
+ 
+if(user.kyy_level === 1) {
+  
+  let loan = await UserRepository.getLoan();
+  
+  return successResponse(res, 'Loans available', {loan});
+  }
+  
+  if(user.kyy_level === 2){
+      
+  let loan = await UserRepository.getLoanCooperate();
+  
+  return successResponse(res, 'Loans available', {loan});
+  }
+ }
+ 
+ catch(error) {
+     console.log('an error occurred');
+     return errorResponse(res, error.message)
+ }
+}
+
+
+
+exports.getAllUserDetails = async(req, res, next) => {
+  let { id } = req.query;
+  let user = await UserRepository.getUserId(id);
+
+  if(!user) {
+    return errorResponse(res, 'User not found');
+}
+
+//getUserReferral
+ try{
+ 
+  
+  let wallet = await UserRepository.getUserWallet(id);
+  let userdetails = await UserRepository.getUserAddDetails(id);
+
+  
+  return res.status(200).json({
+    status: true,
+    message: 'User detail retrieved',
+    user,
+    userdetails,
+    wallet
+  });
+    
+ }
+ 
+ catch(error) {
+     console.log('an error occurred');
+     return errorResponse(res, error.message)
+ }
+}
+
+
+exports.getUserBalance = async(req, res, next) => {
+  let { id } = req.query;
+  let user = await UserRepository.getUserId(id);
+
+  if(!user) {
+    return errorResponse(res, 'User not found');
+}
+
+//getUserReferral
+ try{  
+  let wallet = await UserRepository.getUserWallet(id);
+  
+  return res.status(200).json({
+    status: true,
+    message: 'User Available Balance',
+    wallet
+  });
+    
  }
  
  catch(error) {

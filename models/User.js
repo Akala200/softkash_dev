@@ -30,6 +30,10 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    referral_id: {
+        type: String,
+        required: false,
+    },
     verified: {
         type: Boolean,
         required: false,

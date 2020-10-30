@@ -39,6 +39,44 @@ const UserDetailsSchema = new Schema({
         required: true
     },
 
+    kyy_level: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    dob: {
+        type: Date,
+        required: true,
+        trim: true,
+    },
+    devices_code: {
+        type: String,
+        required: true,
+    },
+    gender: {
+        type: String,
+        enum : ['Male', 'Female'],
+        required: true,
+    },
+    marital_status: {
+        type: String,
+        enum : ['Single', 'Married'],
+        required: true,
+    },
+    lock_status: {
+        type: Boolean,
+        default: false,
+        required: false,
+    },
+    parent_id: {
+        type: String,
+        required: false,
+    },
+    user: {
+        type: String,
+        unique: true,
+        required: false,
+    },
     country: {
         type: String,
         required: true
@@ -67,6 +105,10 @@ const UserDetailsSchema = new Schema({
     bussiness_name: {
         type: String,
         required: true
+    },
+    completed_repayment_cirle: {
+        type: Number,
+        required: false
     },
 },
 { timestamps: true });

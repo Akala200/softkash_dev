@@ -1,61 +1,26 @@
-const User = require('../models/User');
 const Admin = require('../models/Admin');
 const Loan = require('../models/Loan');
 
-const Wallet = require('../models/wallet');
+const Token = require('../models/Token');
 const UserDetails = require('../models/UserDetails');
 
 
 const {makeToken} = require('../helpers');
 const generateUniqueId = require('generate-unique-id');
 
-exports.getUser = async (phone) => {
+exports.getAdmin = async (email) => {
 
-    let user = await User.findOne(phone);
+    let user = await Admin.findOne({email: email});
     if(!user) {
         return false;
     }
     return user;
 }
 
-exports.getUserPhone = async (phone) => {
-    let user = await User.findOne({phone: phone}).catch((err) => {
-        console.log(err);
-        return false;
-    });
-    return user;
-}
-
-exports.getUserAddDetails = async (id) => {
-    let user = await UserDetails.findOne({user: id}).catch((err) => {
-        console.log(err);
-        return false;
-    });
-    return user;
-}
-
-
-exports.getLoan = async () => {
-    let type = 'Personal';
-    let loan = await Loan.find({type: type}).catch((err) => {
-        console.log(err);
-        return false;
-    });
-    return loan;
-}
-
-exports.getLoanCooperate = async () => {
-    let type = 'Cooperate';
-    let loan = await Loan.find({type: type}).catch((err) => {
-        console.log(err);
-        return false;
-    });
-    return loan;
-}
-
 
 
 exports.getUserByToken = async (token) => {
+    console.log(token);
     let user = await User.findOne({token: token}).catch((err) => {
         console.log(err)
         return err
@@ -63,16 +28,6 @@ exports.getUserByToken = async (token) => {
 
     return user;
 }
-
-exports.getUserWallet = async (id) => {
-    let wallet = await Wallet.findOne({user: id}).catch((err) => {
-        console.log(err)
-        return err
-    });
-
-    return wallet;
-}
-
 
 exports.getUserId = async (id) => {
     let user = await User.findById(id).catch((err) => {
@@ -91,33 +46,7 @@ exports.getUserReferral = async (referral_id) => {
 }
 
 
-exports.createUser = async ({...params}) => {
-    let user = new User({...params});
 
-    try {
-        user = await user.save();
-        return user
-    }
-    catch(error) {
-        console.log(error);
-        throw error;
-    }
-    // return user;
-}
-
-exports.createWallet = async ({...params}) => {
-    let wallet = new Wallet({...params});
-
-    try {
-        wallet = await wallet.save();
-        return wallet
-    }
-    catch(error) {
-        console.log(error);
-        throw error;
-    }
-    // return user;
-}
 
 exports.createAdmin = async ({...params}) => {
     let admin  = new Admin({...params});
@@ -127,11 +56,40 @@ exports.createAdmin = async ({...params}) => {
         return admin
     }
     catch(error) {
+        throw error;
+    }
+    // return user;
+}
+
+exports.createLoan = async ({...params}) => {
+    let loan  = new Loan({...params});
+
+    try {
+        loan = await loan.save();
+        return loan
+    }
+    catch(error) {
         console.log(error);
         throw error;
     }
     // return user;
 }
+
+
+exports.editLoan = async ( name, type, amount, interrest_rate, repayment_duration, id) => {
+    let loanData  = {
+        name, type, amount, interrest_rate, repayment_duration
+    }
+
+    let loan = await Loan.findByIdAndUpdate(id, loanData, { new: true }).catch((err) => {
+        return err
+    });
+    console.log(loan);
+
+    return loan;
+    // return user;
+}
+
 
 exports.storeToken = async( phone) => {
     let user = await User.findOne({ phone});
@@ -150,17 +108,14 @@ exports.storeToken = async( phone) => {
     return user;
 }
 
-exports.verify = async(code) => {
-   const newToken = ''
+exports.changePassword = async(email, hashedPassword) => {
     let userData ={
-        token: newToken,
-        verified: true,
-        verified_at: Date.now()
+        password: hashedPassword,
     }
 
-    let user = await User.findOneAndUpdate({ token: code }, userData, { new: true }).catch((err) => {
+    let user = await Admin.findOneAndUpdate({ email: email }, userData, { new: true }).catch((err) => {
         return err
-    })
+    });
 
     return user;
     

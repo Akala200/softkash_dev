@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const app = express();
 dotenv.config();
 
+console.log(Date.now())
 
 const MONGODB_URI = `mongodb+srv://coin:1234567890@cluster0.y5nwu.mongodb.net/softkash?retryWrites=true&w=majority`;
 
@@ -20,6 +21,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const userRoutes = require("./routes/userRoute");
 const authRoute = require("./routes/authRoute");
 const exampleRoute = require("./routes/exampleRoute");
+const adminRoute = require("./routes/adminRoute");
+
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -34,6 +37,8 @@ app.use((req, res, next) => {
   app.use("/", userRoutes);
   app.use("/", authRoute);
   app.use("/", exampleRoute);
+  app.use("/", adminRoute);
+
 
 // process.exit();
 
