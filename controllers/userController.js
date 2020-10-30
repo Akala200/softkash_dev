@@ -190,7 +190,7 @@ exports.getAllUserDetails = async(req, res, next) => {
 }
 
 
-exports.getUserBalance = async(req, res, next) => {
+exports.getUserBalance = async(req, res, next) => { 
   let { id } = req.query;
   let user = await UserRepository.getUserId(id);
 
