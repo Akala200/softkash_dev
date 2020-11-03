@@ -18,6 +18,13 @@ exports.postUser = async(req, res, next) => {
     let {phone, password, country_code} = req.body;
     // process.exit();
 
+    if(!phone || phone.length < 11 || !password ) {
+      return res.status(400).json({
+        status: false,
+        message: 'Phone number or password required',
+      });
+    }
+
     const token = generateUniqueId({
       length: 6,
       useLetters: false
