@@ -89,14 +89,14 @@ exports.postUser = async(req, res, next) => {
   if(!email ) {
     return res.status(400).json({
       status: false,
-      message: 'Phone number or password required',
+      message: 'Email or password required',
     });
   }
 
   if( !password ) {
     return res.status(400).json({
       status: false,
-      message: 'Phone number or password required',
+      message: 'Email or password required',
     });
   }
 
@@ -136,7 +136,7 @@ exports.postUser = async(req, res, next) => {
  }
  catch(error) {
      console.log('an error occurred');
-     return errorResponse(res, error.message, {phone, password})
+     return errorResponse(res, error.message)
  }
 }
 
