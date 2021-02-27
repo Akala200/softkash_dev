@@ -14,7 +14,7 @@ const WalletSchema = new Schema({
         default: 0
     },
 
-    phone: {
+    email: {
         type: String,
         required: true
     },

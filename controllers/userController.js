@@ -105,12 +105,6 @@ exports.postUser = async(req, res, next) => {
     useLetters: false
   });
 
-  const referral_id = generateUniqueId({
-    length: 12,
-    useLetters: true
-  });
-
-
     const salt = await bcrypt.genSalt(10);
  const hashedPassword = await bcrypt.hash(password, salt).catch((err) => {
    return err
@@ -129,7 +123,7 @@ exports.postUser = async(req, res, next) => {
 
    const wallet = await UserRepository.createWallet({
     vendor: vendor._id,
-    phone: number,
+    email: email,
 });
 
  // Mail.sendVerifyEmail(email, token);
