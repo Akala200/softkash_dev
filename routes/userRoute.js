@@ -3,7 +3,7 @@ const UserController = require('../controllers/userController');
 
 
 router.get('/', UserController.getUser);
-router.post("/register", UserController.postUser);
+router.post("/register/vendor", UserController.postUser);
 router.post("/verify", UserController.VerifyUser);
 
 
