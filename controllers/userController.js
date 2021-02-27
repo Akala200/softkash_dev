@@ -77,6 +77,77 @@ exports.postUser = async(req, res, next) => {
    }
 }
 
+
+
+
+
+
+exports.postUser = async(req, res, next) => {
+  let {fullname, password, businessName, businessAddress, email, number, referral_id } = req.body;
+  // process.exit();
+
+  if(!email ) {
+    return res.status(400).json({
+      status: false,
+      message: 'Phone number or password required',
+    });
+  }
+
+  if( !password ) {
+    return res.status(400).json({
+      status: false,
+      message: 'Phone number or password required',
+    });
+  }
+
+  const token = generateUniqueId({
+    length: 6,
+    useLetters: false
+  });
+
+  const referral_id = generateUniqueId({
+    length: 12,
+    useLetters: true
+  });
+
+
+    const salt = await bcrypt.genSalt(10);
+ const hashedPassword = await bcrypt.hash(password, salt).catch((err) => {
+   return err
+ })
+ 
+ try{
+   const vendor = await UserRepository.createVendor({
+       fullname,
+       password: hashedPassword,
+       businessName: businessName,
+       businessAddress: businessAddress,
+       number: number,
+       token: token,
+       referral_id: referral_id
+   });
+
+   const wallet = await UserRepository.createWallet({
+    vendor: vendor._id,
+    phone: number,
+});
+
+ // Mail.sendVerifyEmail(email, token);
+    return res.status(200).json({
+      status: true,
+      message: 'Registration is successfull, kindly verify your account before the token expires',
+      user,
+      wallet
+    });
+ }
+ catch(error) {
+     console.log('an error occurred');
+     return errorResponse(res, error.message, {phone, password})
+ }
+}
+
+
+
 exports.VerifyUser = async(req, res, next) => {
   let {code} = req.body;
   // process.exit();

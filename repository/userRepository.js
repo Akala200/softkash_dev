@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Vendor = require('../models/Vendor');
+
 const Admin = require('../models/Admin');
 const Loan = require('../models/Loan');
 
@@ -97,6 +99,20 @@ exports.createUser = async ({...params}) => {
     try {
         user = await user.save();
         return user
+    }
+    catch(error) {
+        console.log(error);
+        throw error;
+    }
+    // return user;
+}
+
+exports.createVendor = async ({...params}) => {
+    let vendor = new Vendor({...params});
+
+    try {
+        vendor = await vendor.save();
+        return vendor
     }
     catch(error) {
         console.log(error);
