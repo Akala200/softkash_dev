@@ -130,7 +130,7 @@ exports.postUser = async(req, res, next) => {
     return res.status(200).json({
       status: true,
       message: 'Registration is successfull, kindly verify your account before the token expires',
-      user,
+      vendor,
       wallet
     });
  }
