@@ -122,7 +122,7 @@ exports.postUser = async(req, res, next) => {
    });
 
    const wallet = await UserRepository.createWallet({
-    vendor: vendor._id,
+    user: vendor._id,
     email: email,
 });
 
